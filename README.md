@@ -92,7 +92,7 @@ Set up BTRFS on and encrypted LUKS partition:
      passphrase
      cryptsetup luksOpen /dev/vda2 vg0
      vgcreate vg0 /dev/mapper/vg0
-     lvcreate -L 4G -n swap vg0
+     lvcreate -L 40G -n swap vg0 # 32GB ram, with buffer
      lvcreate -l 100%FREE -n root vg0
      mkswap /dev/mapper/vg0-swap
      swapon /dev/mapper/vg0-swap
