@@ -2,6 +2,8 @@ Tested on my system76 Oryx Pro (oryp8)
 
 https://tech-docs.system76.com/models/oryp8/README.html
 
+The aim of this installation is to support hibernation with encrypted swap and btrfs snapshots
+
 # Set up laptop
 In BIOS, under security, set "Enforce secure boot" to "disabled".
 
