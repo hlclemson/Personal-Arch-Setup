@@ -108,10 +108,10 @@ Set up BTRFS on and encrypted LUKS partition:
  
  Mount the filesystems:
 
-    mount -o noatime,compress=zstd,ssd,discard=async,space_cache=v2,subvol=@ /dev/mapper/vg-root /mnt
+    mount -o noatime,compress=zstd,ssd,discard=async,space_cache=v2,subvol=@ /dev/mapper/vg0-root /mnt
     mkdir -p /mnt/{boot,home,var,swap}
-    mount -o noatime,compress=zstd,ssd,discard=async,space_cache=v2,subvol=@home /dev/mapper/vg-root /mnt/home
-    mount -o noatime,compress=zstd,ssd,discard=async,space_cache=v2,subvol=@var /dev/mapper/vg-root /mnt/var
+    mount -o noatime,compress=zstd,ssd,discard=async,space_cache=v2,subvol=@home /dev/mapper/vg0-root /mnt/home
+    mount -o noatime,compress=zstd,ssd,discard=async,space_cache=v2,subvol=@var /dev/mapper/vg0-root /mnt/var
     mount /dev/vda1 /mnt/boot
     lsblk
 
