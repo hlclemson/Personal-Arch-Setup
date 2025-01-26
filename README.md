@@ -104,14 +104,16 @@ Set up BTRFS on and encrypted LUKS partition:
      btrfs subvolume create /mnt/@
      btrfs subvolume create /mnt/@home
      btrfs subvolume create /mnt/@var
+     btrfs subvolume create /mnt/@snapshots
      umount /mnt
  
  Mount the filesystems:
 
     mount -o noatime,compress=zstd,ssd,discard=async,space_cache=v2,subvol=@ /dev/mapper/vg0-root /mnt
-    mkdir -p /mnt/{boot,home,var,swap}
+    mkdir -p /mnt/{boot,home,var,swap,.snapshots}
     mount -o noatime,compress=zstd,ssd,discard=async,space_cache=v2,subvol=@home /dev/mapper/vg0-root /mnt/home
     mount -o noatime,compress=zstd,ssd,discard=async,space_cache=v2,subvol=@var /dev/mapper/vg0-root /mnt/var
+    mount -o noatime,compress=zstd,ssd,discard=async,space_cache=v2,subvol=@snapshots /dev/mapper/vg0-root /mnt/.snapshots
     mount /dev/vda1 /mnt/boot
     lsblk
 
@@ -234,10 +236,6 @@ Un-comment and replace RebootWatchdogSec line with:
 
     RebootWatchdogSec=0
 
-# Install some packages:
-
-    sudo pacman -S man-db man-pages nvidia-open-dkms nvidia-utils
-
 # Set up the AUR
 
     sudo pacman -S --needed git base-devel
@@ -245,9 +243,9 @@ Un-comment and replace RebootWatchdogSec line with:
     cd yay
     makepkg -si
 
-# Install KDE:
+# Install KDE and necessary packages:
 
-    sudo pacman -Sy plasma-meta plasma-browser-integration kde-gtk-config xdg-desktop-portal xdg-desktop-portal-kde sddm foot
+    sudo pacman -S man-db man-pages nvidia-open-dkms nvidia-utils plasma-meta plasma-browser-integration kde-gtk-config xdg-desktop-portal xdg-desktop-portal-kde sddm sddm-kcm foot snapper duf
     sudo yay -S zen-browser-bin
 
 Choose pipewire-jack, wireplumber, noto-fonts, vlc
@@ -260,3 +258,39 @@ Fingerprint reader:
 
     sudo pacman -Sy fprintd
     fprintd-enroll
+
+# Setup automatic login
+
+    vim /etc/sddm.conf.d/autologin.conf
+    add 
+    [Autologin]
+    User=john
+    Session=plasma
+
+# Set up snapper
+
+    sudo -s
+    umount /.snapshots
+    rm -r /.snapshots
+    snapper -c root create-config /
+    btrfs subvolume list /
+    btrfs subvolume delete /.snapshots
+    mkdir /.snapshots
+    more /etc/fstab
+    mount -a
+    btrfs subvol get-default /
+    btrfs subvol list/
+    btrfs subvolume set-default ${@TOPLEVEL_ID} /
+    btrfs subvol get-default /
+    vim /etc/snapper/configs/root
+    change ALLOW_GROUPS="wheel"
+    change TIMELINE_LIMITs according to arch wiki
+    :wq
+    chown -R :wheel /.snapshots/
+    systemctl enable --now grub-btrfs.path
+    grub-mkconfig -o /boot/grub/grub.cfg
+    systemctl enable --now snapper-timeline.timer
+    systemctl enable --now snapper-cleanup.timer
+    snapper -c root create -d "***Base System Configuration***"
+    grub-mkconfig -o /boot/grub/grub.cfg
+
