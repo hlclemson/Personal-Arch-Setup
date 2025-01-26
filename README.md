@@ -256,8 +256,6 @@ Choose pipewire-jack, wireplumber, noto-fonts, vlc
     sudo systemctl start sddm
     sudo systemctl --user enable foot-server
 
-Enable video acceleration in Firefox by going to about:config and setting ffmpeg_v8_api to true.
-
 Fingerprint reader:
 
     sudo pacman -Sy fprintd
