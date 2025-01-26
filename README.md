@@ -1,9 +1,12 @@
-See video: https://www.youtube.com/watch?v=BAQ78pBPjjc
+Tested on my system76 Oryx Pro (oryp8)
+
+https://tech-docs.system76.com/models/oryp8/README.html
 
 # Set up laptop
 In BIOS, under security, set "Enforce secure boot" to "disabled".
 
 # Get install environment working
+
 Keyboard layout for boot env:
 
     localectl list-keymaps | grep us
@@ -19,10 +22,12 @@ Connect to wifi:
     station wlan0 scan
     station wlan0 get-networks
     station wlan0 connect myssid
-    
+
+Test the internet connection:
+
     ping www.google.com
 
-IMPORTANT: set up system time
+IMPORTANT, set up system time:
 
     timedatectl list-timezones | grep New_York
     ln -sf /usr/share/zoneinfo/America/New_York /etc/localtime
@@ -34,7 +39,7 @@ Check mirror list; hopefully this has been updated automatically by Reflector:
 
     vim /etc/pacman.d/mirrorlist
 
-Sync package database.
+Sync package database:
 
     pacman -Sy
 
@@ -46,14 +51,14 @@ See disks:
 
 Partition disk:
 
-    gdisk /dev/nvme0n1
+    gdisk /dev/vda
 
 Make boot EFI partition:
 
     n
     1
     ENTER for default first sector
-    +350M
+    +1GB
     ef00
 
 Make main linux partition:
@@ -76,7 +81,7 @@ Write the partiion table and exit:
 
 Format the boot parition:
 
-    mkfs.vfat /dev/nvme0n1p1
+    mkfs.vfat /dev/vda1
 
 Set up BTRFS on and encrypted LUKS partition:
 
@@ -93,7 +98,7 @@ Set up BTRFS on and encrypted LUKS partition:
  
  Set up BTRFS sub-volumes:
  
-     mount /dev/mapper/vg0-root /mnt 
+     mount /dev/mapper/vg0-root /mnt
      btrfs subvolume create /mnt/@
      btrfs subvolume create /mnt/@home
      btrfs subvolume create /mnt/@var
@@ -105,7 +110,7 @@ Set up BTRFS on and encrypted LUKS partition:
     mkdir -p /mnt/{boot,home,var,swap}
     mount -o noatime,compress=zstd,ssd,discard=async,space_cache=v2,subvol=@home /dev/mapper/vg-root /mnt/home
     mount -o noatime,compress=zstd,ssd,discard=async,space_cache=v2,subvol=@var /dev/mapper/vg-root /mnt/var
-    mount /dev/nvme0n1p1 /mnt/boot
+    mount /dev/vda1 /mnt/boot
     lsblk
 
 # Install Arch
@@ -126,10 +131,10 @@ Chroot time:
 
 Localisation:
 
-    ln -sf /usr/share/zoneinfo/Europe/London /etc/localtime
+    ln -sf /usr/share/zoneinfo/America/New_York /etc/localtime
     vim /etc/locale.gen
 
-Un-comment desired locales, e.g. en_GB.UTF8 and en_GB ISO-8859-1
+Un-comment desired locales, e.g. en_US.UTF-8 and en_US
 
     :wq
     locale-gen
@@ -154,16 +159,14 @@ Set root password:
 # Set up boot
 
     pacman -Syu grub efibootmgr networkmanager wpa_supplicant mtools dosfstools base-devel linux-headers lvm2
-    
-Choose defaults when prompted.
 
-   grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
+Choose defaults when prompted:
+
+    grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
 
 Get UUID of boot device and append it to end of file for cutting and pasting:
 
-    blkid
-    blkid | grep n1p2 | cut -d\" -f 2
-    blkid | grep n1p2 | cut -d\" -f 2 >> /etc/default/grub # we need to edit this next
+    blkid | grep vda2 | cut -d\" -f 2 >> /etc/default/grub # we need to edit this next
     vim /etc/default/grub
 
 Edit GRUB_CMDLINE_LINUX_DEFAULT to look like this; you can cut the UUID from the end of the file by pressing v to go
@@ -190,7 +193,7 @@ Edit the HOOKS line to look like this:
 Then run:
 
     mkinitcpio -P
-    
+
 Enable services:
 
     systemctl enable NetworkManager
@@ -221,7 +224,6 @@ Use this tool to configure the network:
 
     sudo nmtui
 
-
 # Fix watchdog error message on reboot:
 
     sudo vim /etc/systemd/system.conf
@@ -243,13 +245,14 @@ Un-comment and replace RebootWatchdogSec line with:
 
 # Install KDE:
 
-    sudo pacman -Sy plasma-meta plasma-browser-integration kde-gtk-config xdg-desktop-portal xdg-desktop-portal-kde sddm
+    sudo pacman -Sy plasma-meta plasma-browser-integration kde-gtk-config xdg-desktop-portal xdg-desktop-portal-kde sddm foot
     sudo yay -S zen-browser-bin
 
 Choose pipewire-jack, wireplumber, noto-fonts, vlc
 
     sudo systemctl enable sddm
     sudo systemctl start sddm
+    sudo systemctl --user enable foot-server
 
 Enable video acceleration in Firefox by going to about:config and setting ffmpeg_v8_api to true.
 
@@ -257,24 +260,3 @@ Fingerprint reader:
 
     sudo pacman -Sy fprintd
     fprintd-enroll
-
-# Set up hibernation
-
-    sudo vim /etc/mkinitcpio.conf
-
-
-Now run:
-
-    sudo grub-mkconfig -o /boot/grub/grub.cfg
-
-Reboot once before trying to hibernate. Hibernate with:
-
-    sudo systemctl hibernate
-
-
-# nvidia
-
-(seems to be working without this)
-https://www.reddit.com/r/archlinux/comments/1cymlh6/hibernate_on_nvidia/
-options nvidia NVreg_PreserveVideoMemoryAllocations=1
-options nvidia NVreg_TemporaryFilePath=/var/tmp 
