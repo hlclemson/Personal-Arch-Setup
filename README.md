@@ -245,8 +245,8 @@ Un-comment and replace RebootWatchdogSec line with:
 
 # Install KDE and necessary packages:
 
-    sudo pacman -S man-db man-pages nvidia-open-dkms nvidia-utils plasma-meta plasma-browser-integration kde-gtk-config xdg-desktop-portal xdg-desktop-portal-kde sddm sddm-kcm foot snapper duf
-    sudo yay -S zen-browser-bin
+    sudo pacman -S man-db man-pages nvidia-open-dkms nvidia-utils plasma-meta plasma-browser-integration kde-gtk-config xdg-desktop-portal xdg-desktop-portal-kde sddm sddm-kcm foot snapper duf mpv
+    sudo yay -S zen-browser-bin phonon-qt6-mpv
 
 Choose pipewire-jack, wireplumber, noto-fonts, vlc
 
@@ -294,3 +294,6 @@ Fingerprint reader:
     snapper -c root create -d "***Base System Configuration***"
     grub-mkconfig -o /boot/grub/grub.cfg
 
+# additional packages
+
+    sudo pacman -S freecad paraview inkscape miniconda3 transmission-qt code electrum wireshark-qt jupyter-notebook
