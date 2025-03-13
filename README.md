@@ -245,9 +245,6 @@ Un-comment and replace RebootWatchdogSec line with:
 
 # Install system packages:
 
-<<<<<<< HEAD
-    sudo pacman -S man-db man-pages nvidia-open-dkms nvidia-utils plasma-meta plasma-browser-integration kde-gtk-config xdg-desktop-portal xdg-desktop-portal-kde sddm sddm-kcm foot snapper duf mpv
-=======
     sudo pacman -S man-db man-pages nvidia-open-dkms nvidia-utils nvidia-prime openssh sshfs foot snapper duf lf fzf cups rsync plocate
     yay -S system76-dkms-git system76-acpi-dkms system76-io-dkms system76-driver system76-power system76-firmware
 
@@ -265,7 +262,6 @@ Un-comment and replace RebootWatchdogSec line with:
 # Install KDE desktop environment and necessary packages:
 
     sudo pacman -S plasma-meta plasma-browser-integration kde-gtk-config xdg-desktop-portal xdg-desktop-portal-kde sddm sddm-kcm wl-clipboard foot spectacle okular ark unrar dolphin unzip mpv kdegraphics-thumbnailers libappimage ffmpegthumbs noto-fonts-cjk
->>>>>>> 9e7b023 (update)
     sudo yay -S zen-browser-bin phonon-qt6-mpv
 
 Choose pipewire-jack, wireplumber, noto-fonts, vlc
@@ -322,11 +318,6 @@ Fingerprint reader:
     snapper -c root create -d "***Base System Configuration***"
     grub-mkconfig -o /boot/grub/grub.cfg
 
-<<<<<<< HEAD
-# additional packages
-
-    sudo pacman -S freecad paraview inkscape miniconda3 transmission-qt code electrum wireshark-qt jupyter-notebook
-=======
 # set up virtual machine
 
 
@@ -339,4 +330,3 @@ Fingerprint reader:
 
 # (troubleshooting) add kernel parameter if you see a ghost monitor
     "initcall_blacklist=simpledrm_platform_driver_init"
->>>>>>> 9e7b023 (update)
