@@ -121,7 +121,7 @@ Set up BTRFS on and encrypted LUKS partition:
 
 Pacstrap:
 
-    pacstrap /mnt base linux linux-firmware git vim intel-ucode btrfs-progs
+    pacstrap /mnt base linux-zen linux-zen-headers linux-firmware git vim intel-ucode btrfs-progs
 
 More setup:
 
@@ -243,9 +243,29 @@ Un-comment and replace RebootWatchdogSec line with:
     cd yay
     makepkg -si
 
-# Install KDE and necessary packages:
+# Install system packages:
 
+<<<<<<< HEAD
     sudo pacman -S man-db man-pages nvidia-open-dkms nvidia-utils plasma-meta plasma-browser-integration kde-gtk-config xdg-desktop-portal xdg-desktop-portal-kde sddm sddm-kcm foot snapper duf mpv
+=======
+    sudo pacman -S man-db man-pages nvidia-open-dkms nvidia-utils nvidia-prime openssh sshfs foot snapper duf lf fzf cups rsync plocate
+    yay -S system76-dkms-git system76-acpi-dkms system76-io-dkms system76-driver system76-power system76-firmware
+
+# Start system76 services
+
+    sudo systemctl enable system76
+    sudo systemctl enable system76-firmware-daemon
+    sudo systemctl enable com.system76.PowerDaemon
+    reboot
+
+# Start printer service
+
+    sudo systemctl enable cups.socket
+
+# Install KDE desktop environment and necessary packages:
+
+    sudo pacman -S plasma-meta plasma-browser-integration kde-gtk-config xdg-desktop-portal xdg-desktop-portal-kde sddm sddm-kcm wl-clipboard foot spectacle okular ark unrar dolphin unzip mpv kdegraphics-thumbnailers libappimage ffmpegthumbs noto-fonts-cjk
+>>>>>>> 9e7b023 (update)
     sudo yay -S zen-browser-bin phonon-qt6-mpv
 
 Choose pipewire-jack, wireplumber, noto-fonts, vlc
@@ -259,13 +279,21 @@ Fingerprint reader:
     sudo pacman -Sy fprintd
     fprintd-enroll
 
+# Disable indexing
+    balooctl6 disable
+    systemctl --user mask plasma-baloorunner.service
+
 # Setup automatic login
 
-    vim /etc/sddm.conf.d/autologin.conf
-    add 
+    vim /etc/sddm.conf.d/kde_settings.conf
+    add
     [Autologin]
     User=john
     Session=plasma
+
+# install snapper packages
+
+    sudo pacman -S grub-btrfs snap-pac
 
 # Set up snapper
 
@@ -294,6 +322,21 @@ Fingerprint reader:
     snapper -c root create -d "***Base System Configuration***"
     grub-mkconfig -o /boot/grub/grub.cfg
 
+<<<<<<< HEAD
 # additional packages
 
     sudo pacman -S freecad paraview inkscape miniconda3 transmission-qt code electrum wireshark-qt jupyter-notebook
+=======
+# set up virtual machine
+
+
+# additional packages
+
+    sudo pacman -S freecad paraview inkscape miniconda3 transmission-qt code electrum wireshark-qt jupyter-notebook pass pass-otp nerd-fonts zsh zsh-completions zsh-doc python-scipy python-seaborn neovim-qt obsidian tmux pigz dictd  element-desktop virt-manager qemu-base qemu-desktop qview texlive
+    sudo pacman -S imagemagick
+    yay -S zoom zotero-bin onlyoffice-bin pybind11
+    yay -S klatexformula
+
+# (troubleshooting) add kernel parameter if you see a ghost monitor
+    "initcall_blacklist=simpledrm_platform_driver_init"
+>>>>>>> 9e7b023 (update)
