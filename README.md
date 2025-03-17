@@ -328,5 +328,9 @@ Fingerprint reader:
     yay -S zoom zotero-bin onlyoffice-bin pybind11
     yay -S klatexformula
 
+# Install Chrony and start the service (to prevent the OTP from generating incorrect numbers due to an out-of-sync system clock)
+  sudo pacman -S chrony
+  systemctl enable --now chrony.service
+
 # (troubleshooting) add kernel parameter if you see a ghost monitor
     "initcall_blacklist=simpledrm_platform_driver_init"
